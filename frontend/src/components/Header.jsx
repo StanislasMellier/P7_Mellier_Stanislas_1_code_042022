@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './css/Header.css';
 import IconLeftBlack from '../assets/logo/icon-left-font-monochrome-black.svg';
 import { useLocalStorage } from '../Utils/useLocalStorage';
-import axios from 'axios';
 import Profile from './Profile';
 function Header() {
 	const [AuthToken, setAuthToken] = useLocalStorage('auth', '');
@@ -14,7 +13,7 @@ function Header() {
 			setIsLogged(true);
 			console.log(IsLogged);
 		}
-	}, []);
+	}, [AuthToken, IsLogged]);
 	return (
 		<header className='header'>
 			<div className='logo'>

@@ -29,7 +29,7 @@ export default function Post({
 	const [answer, setAnswer] = useState('');
 	const handleSendAnswer = () => {
 		axios.post(
-			'http://localhost:3001/api/post/answer',
+			'http://localhost:3001/api/posts/answer',
 			{
 				postId,
 				userId: AuthToken.userId,
@@ -41,6 +41,13 @@ export default function Post({
 	const [OpenPostOptions, setOpenPostOptions] = useState(false);
 	const handlePostOptions = () => {
 		setOpenPostOptions(!OpenPostOptions);
+	};
+	const handleDeletePost = () => {
+		console.log(postId);
+		axios.delete('http://localhost:3001/api/posts/', {
+			data: { postId },
+			headers: { Authorization: `Bearer ${AuthToken.token}` },
+		});
 	};
 	return (
 		<div className='post'>
@@ -88,15 +95,16 @@ export default function Post({
 					<FiMoreVertical className='post-options-icon' />
 				</button>
 			) : null}
-			{OpenPostOptions ? <OptionsMenu /> : null}
-		</div>
-	);
-}
-
-function OptionsMenu({ isAdmin }) {
-	return (
-		<div className='post-options-menu'>
-			<button className='post-options-menu-btn suppr'>Supprimer</button>
+			{OpenPostOptions ? (
+				<div className='post-options-menu'>
+					<button
+						onClick={handleDeletePost}
+						className='post-options-menu-btn suppr'
+					>
+						Supprimer
+					</button>
+				</div>
+			) : null}
 		</div>
 	);
 }

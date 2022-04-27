@@ -31,9 +31,9 @@ function Login() {
 			})
 			.then((res) => {
 				setAuthToken(res.data);
-				// setIsLogged(true);
-				console.log(res.data);
-				// navigate('/');
+				setTimeout(() => {
+					navigate('/');
+				}, 1000);
 			})
 			.catch((error) => {
 				setErrorMsg(error.response.data.message);

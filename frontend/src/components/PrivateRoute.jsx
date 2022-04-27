@@ -6,7 +6,6 @@ import { useLocalStorage } from '../Utils/useLocalStorage';
 function PrivateRoute({ children }) {
 	const [AuthToken, setAuthToken] = useLocalStorage('auth', '');
 	const [isLogged, setIsLogged] = useLocalStorage('isLogged', null);
-	console.log(AuthToken);
 	const { userId, token } = AuthToken;
 	const navigate = useNavigate();
 	useEffect(() => {

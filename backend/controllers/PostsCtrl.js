@@ -35,6 +35,9 @@ exports.GetLatest = (req, res, next) => {
 };
 
 exports.DeletePost = (req, res, next) => {
+	if (!req.body || !req.body.postId) {
+		return res.status(400).json({ error: new Error('Bad Request') });
+	}
 	Mysql.query(
 		'DELETE FROM posts WHERE id=?',
 		[req.body.postId],
@@ -43,7 +46,59 @@ exports.DeletePost = (req, res, next) => {
 				return res.status(500).json({ error: err });
 			}
 			if (results) {
+				console.log(results);
+				if (results.affectedRows === 0) {
+					return res.status(400).json({ message: 'Post inexistant' });
+				}
 				return res.status(200).json({ message: 'Post supprimé' });
+			}
+		}
+	);
+};
+exports.AddAnswer = (req, res, next) => {
+	if (!req.body || !req.body.postId || !req.body.userId) {
+		return res.status(400).json({ error: new Error('Bad Request') });
+	}
+	const answerId = uuidv4();
+	const postId = req.body.postId;
+	const createdBy = req.body.userId;
+	const content = req.body.content;
+	Mysql.query(
+		'INSERT INTO answers (id,postId,createdBy,content) VALUES (?,?,?,?)',
+		[answerId, postId, createdBy, content],
+		(err, results) => {
+			if (err) {
+				return res.status(500).json({ error: err });
+			}
+			if (results) {
+				return res
+					.status(201)
+					.json({ message: 'Cemmentaire enregistré' });
+			}
+		}
+	);
+};
+exports.DeleteAnswer = (req, res, next) => {
+	if (!req.body || !req.body.answerId) {
+		return res.status(400).json({ error: new Error('Bad Request') });
+	}
+	Mysql.query(
+		'DELETE FROM answer WHERE id=?',
+		[req.body.postId],
+		(err, results) => {
+			if (err) {
+				return res.status(500).json({ error: err });
+			}
+			if (results) {
+				console.log(results);
+				if (results.affectedRows === 0) {
+					return res
+						.status(400)
+						.json({ message: 'Commentaire inexistant' });
+				}
+				return res
+					.status(200)
+					.json({ message: 'Commentaire supprimé' });
 			}
 		}
 	);
