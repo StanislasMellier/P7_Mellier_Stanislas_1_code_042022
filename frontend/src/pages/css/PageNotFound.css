@@ -1,0 +1,15 @@
+.section {
+	padding-top: 25vmin;
+	height: 90vmin;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.title {
+	font-size: 3rem;
+	margin-bottom: 2vmin;
+}
+.sub-title {
+	font-weight: 500;
+	font-size: 1.5rem;
+}

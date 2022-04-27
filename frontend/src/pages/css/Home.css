@@ -1,0 +1,28 @@
+.home-main {
+	display: flex;
+	justify-content: center;
+}
+.createPost {
+	margin-top: 5vh;
+	padding: 1vmin;
+	border-radius: 2vmin;
+	width: 25vw;
+	display: flex;
+	flex-direction: column;
+	background-color: white;
+}
+.createPost input {
+	border: none;
+	outline: none;
+	margin: 1vmin;
+}
+.createPost-title {
+	font-size: 1.5rem;
+}
+.createPost-description {
+	font-size: 1rem;
+}
+.createPost-btn {
+	width: 20%;
+	margin: auto;
+}
