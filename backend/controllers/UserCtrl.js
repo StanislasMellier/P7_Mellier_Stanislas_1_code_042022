@@ -3,11 +3,11 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+
 exports.register = (req, res, next) => {
 	const { email, password, name } = req.body;
 	const userId = uuidv4();
 	if (!email || !password || !name) {
-		console.log(req.body);
 		return res
 			.status(400)
 			.json({ message: 'Paramètres email et/ou password manquant.' });
@@ -70,7 +70,6 @@ exports.login = (req, res, next) => {
 
 exports.ChangeProfilePic = (req, res, next) => {
 	if (!req.file) {
-		console.log('Err fichier');
 		return res
 			.status(400)
 			.json({ message: 'Veuillez joindre un fichier.' });
@@ -130,7 +129,6 @@ exports.CheckUser = (req, res, next) => {
 				.status(400)
 				.json({ isValid: false, message: 'Utilisateur inexistant' });
 		}
-		console.log(result);
 
 		const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 		if (userId !== decodedToken.userId) {
@@ -180,7 +178,6 @@ exports.DeleteUser = async (req, res, next) => {
 				bcrypt
 					.compare(password, hashedPwd)
 					.then((value) => {
-						console.log(value);
 						if (!value) {
 							return res
 								.status(400)
