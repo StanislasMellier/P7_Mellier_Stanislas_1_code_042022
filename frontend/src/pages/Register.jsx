@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useContext, useState } from 'react';
+import Api from '../Utils/api';
 import './css/AuthStyle.css';
+import { AuthContext } from '../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 function Register() {
+	const { UserLogin } = useContext(AuthContext);
+	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
 		name: '',
 		email: '',
@@ -18,15 +22,16 @@ function Register() {
 	const onSubmit = (e) => {
 		e.preventDefault();
 
-		axios
-			.post('http://localhost:3001/api/user/register', {
-				email: email,
-				name: name,
-				password: password,
-			})
+		Api.post('/user/register', {
+			email: email,
+			name: name,
+			password: password,
+		})
 			.then((res) => {
-				console.log('REUSSI');
-				console.log(res.data);
+				UserLogin(res.data);
+				setTimeout(() => {
+					navigate('/');
+				}, 500);
 			})
 			.catch((error) => {
 				setErrorMsg(error.response.data.message);

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useContext, useState } from 'react';
+import Api from '../Utils/api';
 import './css/AuthStyle.css';
-import { useLocalStorage } from '../Utils/useLocalStorage';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../Context/AuthContext';
 function Login() {
 	const navigate = useNavigate();
+	const { UserLogin } = useContext(AuthContext);
 
 	const [formData, setFormData] = useState({
 		email: '',
@@ -19,21 +20,18 @@ function Login() {
 		}));
 	};
 
-	const [AuthToken, setAuthToken] = useLocalStorage('auth', '');
-	const [isLogged, setIsLogged] = useLocalStorage('isLogged', null);
 	const onSubmit = (e) => {
 		e.preventDefault();
 
-		axios
-			.post('http://localhost:3001/api/user/login', {
-				email: email,
-				password: password,
-			})
+		Api.post('/user/login', {
+			email: email,
+			password: password,
+		})
 			.then((res) => {
-				setAuthToken(res.data);
+				UserLogin(res.data);
 				setTimeout(() => {
 					navigate('/');
-				}, 1000);
+				}, 500);
 			})
 			.catch((error) => {
 				setErrorMsg(error.response.data.message);
