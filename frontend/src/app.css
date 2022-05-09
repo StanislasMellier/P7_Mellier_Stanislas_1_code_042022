@@ -15,3 +15,9 @@ body {
 	margin: auto;
 	margin-bottom: 0.4rem;
 }
+.sucess-msg {
+	color: rgb(0, 245, 0);
+	font-size: 1rem;
+	margin: auto;
+	margin-bottom: 0.4rem;
+}

@@ -1,19 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import './css/Header.css';
 import IconLeftBlack from '../assets/logo/icon-left-font-monochrome-black.svg';
-import { useLocalStorage } from '../Utils/useLocalStorage';
 import Profile from './Profile';
+import { AuthContext } from '../Context/AuthContext';
 function Header() {
-	const [AuthToken, setAuthToken] = useLocalStorage('auth', '');
-
-	const [IsLogged, setIsLogged] = useState(false);
-	useEffect(() => {
-		if (AuthToken.userId) {
-			setIsLogged(true);
-			console.log(IsLogged);
-		}
-	}, [AuthToken, IsLogged]);
+	const { isLogged, isAdmin, AuthToken, UserLogout } =
+		useContext(AuthContext);
 	return (
 		<header className='header'>
 			<div className='logo'>
@@ -21,8 +14,15 @@ function Header() {
 					<img className='logo-header' src={IconLeftBlack} alt='' />
 				</Link>
 			</div>
-			{IsLogged ? (
-				<Profile userId={AuthToken.userId} token={AuthToken.token} />
+			{isLogged ? (
+				<Profile
+					logout={() => {
+						UserLogout();
+					}}
+					userId={AuthToken.userId}
+					token={AuthToken.token}
+					isAdmin={isAdmin}
+				/>
 			) : (
 				<ul>
 					<li>

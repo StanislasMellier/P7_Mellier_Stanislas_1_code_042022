@@ -28,23 +28,70 @@ ul li {
 	position: relative;
 	height: 75%;
 }
-
 .header-profile-img {
 	border-radius: 100vmax;
 	border: solid rgba(0, 0, 0, 0.25) 1px;
 	height: 100%;
+	aspect-ratio: 1/1;
+	overflow: hidden;
+	display: flex;
 }
+.header-profile-admin {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	margin-left: 1vmin;
+	height: 20px;
+	color: rgb(0, 240, 0);
+	pointer-events: none;
+}
+
 .header-profile-menu {
-	padding: 0.5rem;
+	padding: 0.2rem;
+	padding-top: 0.3rem;
+	padding-bottom: 0.3rem;
 	position: absolute;
 	background-color: white;
 	border-radius: 0.5rem;
 	left: 0;
 	top: 150%;
 }
-.header-profile-logout {
+.header-profile-opt {
+	border-radius: 0.3rem;
+	padding: 0.2rem;
 	cursor: pointer;
 	font-size: 1rem;
 	font-weight: 500;
 	white-space: nowrap;
+}
+.header-profile-opt:hover {
+	transition: all 100ms ease-in;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.parametres-layout {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 10000;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	position: fixed;
+	background-color: rgba(246, 245, 245, 0.5);
+}
+.parametres {
+	font-weight: 500;
+	box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.25);
+	display: flex;
+	flex-direction: column;
+	padding: 1.5rem;
+	border-radius: 1rem;
+	background-color: white;
+}
+.parametres-opt {
+	display: flex;
+	flex-direction: column;
+	margin: 0.3rem;
 }

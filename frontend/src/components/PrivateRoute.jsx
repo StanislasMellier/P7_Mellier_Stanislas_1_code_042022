@@ -1,39 +1,35 @@
-import axios from 'axios';
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useLocalStorage } from '../Utils/useLocalStorage';
+import React, { useContext, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
+import { AuthContext } from '../Context/AuthContext';
+import Api from '../Utils/api';
 
 function PrivateRoute({ children }) {
-	const [AuthToken, setAuthToken] = useLocalStorage('auth', '');
-	const [isLogged, setIsLogged] = useLocalStorage('isLogged', null);
-	const { userId, token } = AuthToken;
-	const navigate = useNavigate();
+	const { isLogged, setIsLogged, AuthToken } = useContext(AuthContext);
 	useEffect(() => {
-		const checkUser = async () => {
-			const data = await axios
-				.post(
-					'http://localhost:3001/api/user/check',
-					{ userId, token },
-					{ headers: { Authorization: `Bearer ${token}` } }
-				)
+		try {
+			Api.post(
+				'/user/check',
+				{ userId: AuthToken.userId, token: AuthToken.token },
+				{ headers: { Authorization: `Bearer ${AuthToken.token}` } }
+			)
 				.then((res) => {
-					return res;
+					if (res.data.isValid) {
+						setIsLogged(true);
+					} else {
+						setIsLogged(false);
+					}
 				})
 				.catch((err) => {
-					return err;
+					setIsLogged(false);
+					// navigate('/login');
+					throw err;
 				});
-			if (data.status !== 200) {
-				setIsLogged(false);
-				navigate('/login');
-				return false;
-			} else {
-				return true;
-			}
-		};
-		checkUser();
+		} catch (error) {
+			setIsLogged(false);
+			console.error(error);
+		}
 	}, [AuthToken]);
-
-	return children;
+	return isLogged ? children : <Navigate to='/login' />;
 }
 
 export default PrivateRoute;
