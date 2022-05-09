@@ -5,8 +5,7 @@ exports.CreatePosts = (req, res, next) => {
 	if (!req.body || !req.body.title || !req.body.userId) {
 		return res.status(400).json({ message: 'Elements manquant' });
 	}
-	console.log(req.body);
-	const postsId = uuidv4();
+	const postId = uuidv4();
 	const createdBy = req.body.userId;
 	const title = req.body.title;
 	const desciption = req.body.description ? req.body.description : null;
@@ -14,24 +13,32 @@ exports.CreatePosts = (req, res, next) => {
 
 	Mysql.query(
 		'INSERT INTO posts (id,createdBy,title,description,imageUrl) VALUES (?,?,?,?,?)',
-		[postsId, createdBy, title, desciption, imageUrl],
+		[postId, createdBy, title, desciption, imageUrl],
 		(err, results) => {
 			if (err) {
 				res.status(500).json({
 					error: new Error('Internal Server Error'),
 				});
 			}
-			return res.status(201).json({ message: 'Post enregistré' });
+			return res.status(201).json({ message: 'Post enregistré', postId });
 		}
 	);
 };
 exports.GetLatest = (req, res, next) => {
-	Mysql.query('SELECT * FROM posts order by createdAt', (err, results) => {
-		if (err) {
-			return res.status(500).json({ error: err });
+	const limit = req.query.limit ? parseInt(req.query.limit) : 3;
+	const page = req.query.page ? parseInt(req.query.page) : 0;
+	const offset = page * limit;
+
+	Mysql.query(
+		'SELECT * FROM posts ORDER BY createdAt DESC LIMIT ?,?',
+		[offset, limit],
+		(err, results) => {
+			if (err) {
+				return res.status(500).json({ error: err });
+			}
+			return res.status(200).json({ results, page });
 		}
-		return res.status(200).json({ results });
-	});
+	);
 };
 
 exports.DeletePost = (req, res, next) => {
@@ -46,7 +53,6 @@ exports.DeletePost = (req, res, next) => {
 				return res.status(500).json({ error: err });
 			}
 			if (results) {
-				console.log(results);
 				if (results.affectedRows === 0) {
 					return res.status(400).json({ message: 'Post inexistant' });
 				}
@@ -68,38 +74,79 @@ exports.AddAnswer = (req, res, next) => {
 		[answerId, postId, createdBy, content],
 		(err, results) => {
 			if (err) {
-				return res.status(500).json({ error: err });
+				return res.status(500).json({
+					message:
+						'Erreur intere : Veuillez ressayer dans quelques instant',
+				});
 			}
 			if (results) {
 				return res
 					.status(201)
-					.json({ message: 'Cemmentaire enregistré' });
+					.json({ message: 'Cemmentaire enregistré', answerId });
 			}
 		}
 	);
 };
-exports.DeleteAnswer = (req, res, next) => {
+exports.DeleteAnswer = async (req, res, next) => {
 	if (!req.body || !req.body.answerId) {
 		return res.status(400).json({ error: new Error('Bad Request') });
 	}
+	console.log(req.body.answerId);
+	const [rows, fields] = await Mysql.promise().query(
+		'SELECT createdBy FROM answers WHERE id=?',
+		[req.body.answerId]
+	);
+	console.log(rows);
+	const createdBy = rows[0].createdBy;
+	console.log(req.auth);
+	if (req.auth.userId !== createdBy) {
+		if (!req.auth.isAdmin) {
+			return res.status(401).json({
+				message: "Vous n'avez pas le droit de supprimer ce commentaire",
+			});
+		}
+	}
 	Mysql.query(
-		'DELETE FROM answer WHERE id=?',
-		[req.body.postId],
+		'DELETE FROM answers WHERE id=?',
+		[req.body.answerId],
 		(err, results) => {
 			if (err) {
 				return res.status(500).json({ error: err });
 			}
 			if (results) {
-				console.log(results);
 				if (results.affectedRows === 0) {
 					return res
 						.status(400)
 						.json({ message: 'Commentaire inexistant' });
 				}
+				console.log('test');
 				return res
 					.status(200)
 					.json({ message: 'Commentaire supprimé' });
 			}
+		}
+	);
+	return res.status(200).json({ message: 'Commentaire supprimé' });
+};
+
+exports.GetLatestAnswer = (req, res, next) => {
+	const limit = req.query.limit ? parseInt(req.query.limit) : 3;
+	const page = req.query.page ? parseInt(req.query.page) : 0;
+	if (!req.query.postId) {
+		return res.status(400).json({ error: new Error('Bad Request') });
+	}
+	const postId = req.query.postId;
+
+	const offset = page * limit;
+	Mysql.query(
+		'SELECT * FROM answers WHERE postId=? ORDER BY createdAt DESC LIMIT ?,?',
+		[postId, offset, limit],
+		(err, results) => {
+			if (err) {
+				return res.status(500).json({ error: err });
+			}
+			// console.log(results);
+			return res.status(200).json({ results, page });
 		}
 	);
 };

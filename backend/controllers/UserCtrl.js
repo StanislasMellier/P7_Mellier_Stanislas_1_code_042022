@@ -60,6 +60,7 @@ exports.login = (req, res, next) => {
 					res.status(200).json({
 						userId: results[0].id,
 						token: generateJWT(results[0].id),
+						isAdmin: results[0].isAdmin,
 					});
 				})
 				.catch((err) => res.status(500).json({ err }));
@@ -69,18 +70,19 @@ exports.login = (req, res, next) => {
 
 exports.ChangeProfilePic = (req, res, next) => {
 	if (!req.file) {
+		console.log('Err fichier');
 		return res
 			.status(400)
 			.json({ message: 'Veuillez joindre un fichier.' });
 	}
-	if (req.params.id !== req.auth.userId) {
+	if (req.body.userId !== req.auth.userId) {
 		return res
 			.status(403)
 			.json({ error: new Error('Requête non authoriser.') });
 	}
-	const userId = req.params.id;
+	const userId = req.body.userId;
 	Mysql.query(
-		'SELECT id,ProfilPicUrl FROM users WHERE id=?',
+		'SELECT id,profilePicUrl FROM users WHERE id=?',
 		[userId],
 		(err, userData) => {
 			if (err) {
@@ -102,7 +104,14 @@ exports.ChangeProfilePic = (req, res, next) => {
 						return res.status(500).json({ err });
 					}
 					if (userData[0].profilePicUrl !== 'default-profile.jpg') {
-						console.log('not default');
+						fs.unlink(
+							`images/${userData[0].profilePicUrl}`,
+							(err) => {
+								if (err) {
+									throw err;
+								}
+							}
+						);
 					}
 					res.status(200).json({
 						message: 'Photo de profil mis à jour',
@@ -115,23 +124,25 @@ exports.ChangeProfilePic = (req, res, next) => {
 
 exports.CheckUser = (req, res, next) => {
 	const { userId, token } = req.body;
-	// Vérifie si le userId est rattacher a un utilisateur existant
 	Mysql.query('SELECT 1 from users WHERE id = ?', [userId], (err, result) => {
-		if (err) {
+		if (err || !result[0]['1']) {
 			return res
 				.status(400)
 				.json({ isValid: false, message: 'Utilisateur inexistant' });
 		}
-	});
+		console.log(result);
 
-	const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-	if (userId !== decodedToken.userId) {
-		return res
-			.status(401)
-			.json({ isValid: false, message: 'Token invalide' });
-	} else {
-		return res.status(200).json({ isValid: true, message: 'Token valide' });
-	}
+		const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+		if (userId !== decodedToken.userId) {
+			return res
+				.status(401)
+				.json({ isValid: false, message: 'Token invalide' });
+		} else {
+			return res
+				.status(200)
+				.json({ isValid: true, message: 'Token valide' });
+		}
+	});
 };
 
 exports.GetUser = (req, res, next) => {
@@ -146,6 +157,70 @@ exports.GetUser = (req, res, next) => {
 			if (results) {
 				const user = results[0];
 				return res.status(200).json({ user });
+			}
+		}
+	);
+};
+
+exports.DeleteUser = async (req, res, next) => {
+	const userId = req.body.userId;
+	const password = req.body.password;
+	if (req.auth !== userId) {
+		return res.status(401).json({ error: new Error('Unauthorized') });
+	}
+	Mysql.query(
+		'SELECT password,profilePicUrl FROM users WHERE id = ?',
+		[userId],
+		(err, result) => {
+			if (err) {
+				return res.status(500).json({ err });
+			}
+			if (result[0].password) {
+				const hashedPwd = result[0].password;
+				bcrypt
+					.compare(password, hashedPwd)
+					.then((value) => {
+						console.log(value);
+						if (!value) {
+							return res
+								.status(400)
+								.json({ message: 'Mot de passe incorrect' });
+						}
+						Mysql.query(
+							'DELETE FROM users WHERE id=?',
+							[userId],
+							(err) => {
+								if (err) {
+									return res.status(500).json({
+										error: new Error(
+											'Internal Server Error'
+										),
+									});
+								}
+								if (
+									result[0].profilePicUrl !==
+									'default-profile.jpg'
+								) {
+									fs.unlink(
+										`images/${result[0].profilePicUrl}`,
+										(err) => {
+											if (err) {
+												throw err;
+											}
+										}
+									);
+								}
+								return res
+									.status(200)
+									.json({ message: 'Utilisateur supprimé' });
+							}
+						);
+					})
+					.catch((err) => {
+						return res.status(500).json({
+							error: new Error('Internal Server Error'),
+						});
+					});
 			}
 		}
 	);

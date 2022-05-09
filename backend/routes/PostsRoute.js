@@ -8,4 +8,6 @@ router.get('/latest', auth, PostsCtrl.GetLatest);
 router.delete('/', auth, PostsCtrl.DeletePost);
 
 router.post('/answer', auth, PostsCtrl.AddAnswer);
+router.get('/answer/latest', auth, PostsCtrl.GetLatestAnswer);
+router.delete('/answer/', auth, PostsCtrl.DeleteAnswer);
 module.exports = router;
