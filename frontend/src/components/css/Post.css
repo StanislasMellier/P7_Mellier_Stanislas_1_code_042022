@@ -28,6 +28,9 @@
 	height: 10%;
 	border-radius: 100vmax;
 	border: 0.5px solid rgba(0, 0, 0, 50%);
+	aspect-ratio: 1/1;
+	overflow: hidden;
+	display: flex;
 }
 .post-user-name {
 	margin-left: 1vmin;
@@ -91,4 +94,8 @@
 	cursor: pointer;
 	background-color: transparent;
 	color: red;
+}
+
+.post-answer {
+	margin: 1vmin;
 }
