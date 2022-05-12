@@ -41,10 +41,28 @@ exports.GetLatest = (req, res, next) => {
 	);
 };
 
-exports.DeletePost = (req, res, next) => {
+exports.DeletePost = async (req, res, next) => {
 	if (!req.body || !req.body.postId) {
 		return res.status(400).json({ error: new Error('Bad Request') });
 	}
+	const postId = req.body.postId;
+	const [rows, fields] = await Mysql.promise().query(
+		'SELECT createdBy FROM posts WHERE id=?',
+		[postId]
+	);
+	if (!rows[0]) {
+		return res.status(400).json({ message: "Ce post n'existe pas" });
+	}
+	const createdBy = rows[0].createdBy;
+
+	if (req.auth.userId !== createdBy) {
+		if (!req.auth.isAdmin) {
+			return res.status(401).json({
+				message: "Vous n'avez pas le droit de supprimer ce commentaire",
+			});
+		}
+	}
+
 	Mysql.query(
 		'DELETE FROM posts WHERE id=?',
 		[req.body.postId],
@@ -91,14 +109,17 @@ exports.DeleteAnswer = async (req, res, next) => {
 	if (!req.body || !req.body.answerId) {
 		return res.status(400).json({ error: new Error('Bad Request') });
 	}
-	console.log(req.body.answerId);
 	const [rows, fields] = await Mysql.promise().query(
 		'SELECT createdBy FROM answers WHERE id=?',
 		[req.body.answerId]
 	);
-	console.log(rows);
+	if (!rows[0]) {
+		return res
+			.status(400)
+			.json({ message: "Ce commentaire n'existe pas " });
+	}
 	const createdBy = rows[0].createdBy;
-	console.log(req.auth);
+
 	if (req.auth.userId !== createdBy) {
 		if (!req.auth.isAdmin) {
 			return res.status(401).json({
@@ -119,14 +140,12 @@ exports.DeleteAnswer = async (req, res, next) => {
 						.status(400)
 						.json({ message: 'Commentaire inexistant' });
 				}
-				console.log('test');
 				return res
 					.status(200)
 					.json({ message: 'Commentaire supprimé' });
 			}
 		}
 	);
-	return res.status(200).json({ message: 'Commentaire supprimé' });
 };
 
 exports.GetLatestAnswer = (req, res, next) => {
@@ -145,7 +164,6 @@ exports.GetLatestAnswer = (req, res, next) => {
 			if (err) {
 				return res.status(500).json({ error: err });
 			}
-			// console.log(results);
 			return res.status(200).json({ results, page });
 		}
 	);

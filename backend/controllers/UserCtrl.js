@@ -163,7 +163,7 @@ exports.GetUser = (req, res, next) => {
 exports.DeleteUser = async (req, res, next) => {
 	const userId = req.body.userId;
 	const password = req.body.password;
-	if (req.auth !== userId) {
+	if (req.auth.userId !== userId) {
 		return res.status(401).json({ error: new Error('Unauthorized') });
 	}
 	Mysql.query(
