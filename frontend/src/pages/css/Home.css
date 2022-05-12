@@ -8,7 +8,7 @@
 	margin: auto;
 	margin-top: 3vh;
 	margin-bottom: 3vh;
-	padding: 3vmin;
+	padding: 1rem;
 	display: flex;
 	border-radius: 1rem;
 	border: none;
@@ -16,31 +16,9 @@
 }
 .more-post:hover {
 	cursor: pointer;
+	box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.5);
+	transition: all 500ms;
 }
 .more-post-icon {
 	font-size: 150%;
-}
-.createPost {
-	margin-top: 5vh;
-	padding: 1vmin;
-	border-radius: 2vmin;
-	width: 25vw;
-	display: flex;
-	flex-direction: column;
-	background-color: white;
-}
-.createPost input {
-	border: none;
-	outline: none;
-	margin: 1vmin;
-}
-.createPost-title {
-	font-size: 1.5rem;
-}
-.createPost-description {
-	font-size: 1rem;
-}
-.createPost-btn {
-	width: 20%;
-	margin: auto;
 }

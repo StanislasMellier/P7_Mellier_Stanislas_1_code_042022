@@ -14,8 +14,6 @@ function UserParams({ toggle }) {
 	const [PasswordErrMsg, setPasswordErrMsg] = useState('');
 	const handleProfilePic = (e) => {
 		e.preventDefault();
-		console.log('submit');
-		console.log(ProfilePic);
 		if (!ProfilePic.name) {
 			setProfilErrMsg('Veuiller joindre un fichier');
 			return;
@@ -31,10 +29,8 @@ function UserParams({ toggle }) {
 			},
 		})
 			.then((res) => {
-				console.log(res.data.message);
 				setSucessMsg(res.data.message);
 				setProfilErrMsg('');
-				console.log(sucessMsg);
 			})
 			.catch(() => {
 				setProfilErrMsg('Erreur Server : Veuillez réessayer plus tard');
@@ -53,7 +49,6 @@ function UserParams({ toggle }) {
 			headers: { Authorization: `Bearer ${AuthToken.token}` },
 		})
 			.then((res) => {
-				console.log(res.data.message);
 				UserLogout();
 			})
 			.catch((err) => {

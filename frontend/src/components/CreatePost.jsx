@@ -1,7 +1,7 @@
 import Api from '../Utils/api';
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../Context/AuthContext';
-
+import './css/CreatePost.css';
 function CreatePost({ onAdd }) {
 	const { AuthToken } = useContext(AuthContext);
 	const { userId, token } = AuthToken;
@@ -57,10 +57,13 @@ function CreatePost({ onAdd }) {
 					setdescription(e.target.value);
 				}}
 			/>
+			<label htmlFor='file-upload' className='createPost-input-image'>
+				Ajouter un fichier | {image[0] ? image[0].name : null}
+			</label>
 			<input
 				type='file'
 				name='image'
-				className='input-image'
+				id='file-upload'
 				onChange={(e) => {
 					setimage(e.target.files);
 				}}

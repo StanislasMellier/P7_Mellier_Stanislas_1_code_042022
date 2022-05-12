@@ -10,9 +10,11 @@ function Home() {
 
 	const [refresh, setrefresh] = useState('');
 	const [PostList, setPostsList] = useState([]);
+	const [page, setPage] = useState(0);
+
 	useEffect(() => {
 		Api.get('/posts/latest', {
-			params: { limit: 3, page: 0 },
+			params: { limit: 10, page: 0 },
 			headers: { Authorization: `Bearer ${AuthToken.token}` },
 		})
 			.then((res) => {
@@ -22,11 +24,10 @@ function Home() {
 				console.error(err);
 			});
 	}, [refresh]);
-	const [page, setPage] = useState(0);
 	const handleLoadMorePost = () => {
 		setPage(+1);
 		Api.get('/posts/latest', {
-			params: { limit: 3, page: 0 },
+			params: { limit: 10, page: page + 1 },
 			headers: { Authorization: `Bearer ${AuthToken.token}` },
 		})
 			.then((res) => {
@@ -48,7 +49,7 @@ function Home() {
 			{PostList.map((item, i) => {
 				return (
 					<Post
-						key={i}
+						key={item.id}
 						title={item.title}
 						userId={item.createdBy}
 						description={item.description}

@@ -85,11 +85,12 @@ export default function Post({
 			headers: { Authorization: `Bearer ${AuthToken.token}` },
 		}).then((res) => {
 			setLatestAnswer(res.data.results);
+			setPage(0);
 		});
 	}, [refresh]);
 	const [page, setPage] = useState(0);
 	const handleLoadMoreAnswer = () => {
-		setPage(+1);
+		setPage(page + 1);
 		Api.get('/posts/answer/latest', {
 			params: { postId: postId, limit: 3, page: page + 1 },
 			headers: { Authorization: `Bearer ${AuthToken.token}` },
@@ -101,7 +102,6 @@ export default function Post({
 	};
 	const handleResetAnswer = () => {
 		setPage(0);
-		console.log(LatestAnswer);
 		const array = [LatestAnswer[0], LatestAnswer[1], LatestAnswer[2]];
 		setLatestAnswer(array);
 	};
@@ -135,10 +135,13 @@ export default function Post({
 				/>
 			) : null}
 			<form onSubmit={handleSendAnswer} className='post-comments'>
-				<label htmlFor='comment'>Commenter : </label>
+				<label className='post-comments-label' htmlFor='comment'>
+					Commenter :{' '}
+				</label>
 				<input
 					type='text'
 					name='comment'
+					className='post-comments-input'
 					value={answer}
 					required
 					onChange={(e) => {
@@ -153,16 +156,22 @@ export default function Post({
 				{LatestAnswer.map((item, i) => {
 					return (
 						<Answer
-							key={i}
+							key={item.id}
 							props={item}
 							onDelete={handleAnswerdelete}
 						></Answer>
 					);
 				})}
-				<button onClick={handleLoadMoreAnswer}>
+				<button
+					className='post-load-answer'
+					onClick={handleLoadMoreAnswer}
+				>
 					<FaArrowDown />
 				</button>
-				<button onClick={handleResetAnswer}>
+				<button
+					className='post-reset-answer'
+					onClick={handleResetAnswer}
+				>
 					<FaArrowUp />
 				</button>
 			</div>

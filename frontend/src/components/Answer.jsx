@@ -60,10 +60,10 @@ function Answer({ props, onDelete }) {
 				</button>
 			) : null}
 			{OpenAnswerOptions ? (
-				<div className='post-options-menu'>
+				<div className='answer-options-menu'>
 					<button
 						onClick={handleDeleteAnswer}
-						className='post-options-menu-btn suppr'
+						className='answer-options-menu-btn suppr'
 					>
 						Supprimer
 					</button>

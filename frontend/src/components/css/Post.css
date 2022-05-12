@@ -1,5 +1,5 @@
 .post {
-	margin-top: 5vh;
+	margin-top: 5vmin;
 	padding: 1vmin;
 	border-radius: 1rem;
 	width: 25vw;
@@ -8,6 +8,16 @@
 	background-color: white;
 	position: relative;
 	box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.25);
+}
+@media screen and (min-width: 699px) {
+	.post {
+		min-width: 450px;
+	}
+}
+@media screen and (max-width: 699px) {
+	.post {
+		width: 90vw;
+	}
 }
 .post-user {
 	margin: 1vmin;
@@ -45,6 +55,13 @@
 .post-comments {
 	display: flex;
 	align-items: center;
+}
+.post-comments-label {
+	white-space: nowrap;
+	padding-right: 1%;
+}
+.post-comments-input {
+	width: 50%;
 }
 .post-comments-send {
 	display: flex;
@@ -84,8 +101,8 @@
 	border-radius: 0.5rem;
 	background-color: #fff;
 	position: absolute;
-	top: 1%;
-	left: calc(100% + 2vmin);
+	top: 0.3rem;
+	right: 0.3rem;
 }
 .post-options-menu-btn {
 	border: none;

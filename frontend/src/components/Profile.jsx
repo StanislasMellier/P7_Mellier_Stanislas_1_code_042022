@@ -32,7 +32,6 @@ function Profile({ userId, token, logout, isAdmin }) {
 
 	const handleLogout = () => {
 		logout();
-		console.log('Profile : handlelogout');
 	};
 	const handleOpenParams = () => {
 		setOpenPrams(!OpenParams);
