@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { useLocalStorage } from '../Utils/useLocalStorage';
 
 export const AuthContext = createContext();
@@ -25,8 +25,7 @@ function AuthContextProvider(props) {
 				AuthToken,
 				UserLogin,
 				UserLogout,
-			}}
-		>
+			}}>
 			{props.children}
 		</AuthContext.Provider>
 	);
