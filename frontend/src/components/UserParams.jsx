@@ -1,10 +1,8 @@
 import Api from '../Utils/api';
 import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Context/AuthContext';
 
 function UserParams({ toggle }) {
-	const navigate = useNavigate();
 	const { AuthToken, UserLogout } = useContext(AuthContext);
 
 	const [ProfilePic, setProfilePic] = useState({});
@@ -63,8 +61,7 @@ function UserParams({ toggle }) {
 				}
 			}}
 			id='parametres-layout'
-			className='parametres-layout'
-		>
+			className='parametres-layout'>
 			<div id='parametres' className='parametres'>
 				<h1>Paramètres</h1>
 				<form onSubmit={handleProfilePic} className='parametres-opt'>
